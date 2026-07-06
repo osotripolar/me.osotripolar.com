@@ -1,5 +1,6 @@
 :root{
   --color-main: rgb(240, 137, 246);
+  --color-altern: rgb(204, 246, 137);
 }
 
 *{
@@ -14,6 +15,27 @@ body{
   min-height: 100dvh;
 }
 
+ul{
+  padding: 0;
+}
+
+li{
+  list-style: none;
+}
+
+button{
+  border: none;
+  background-color: black;
+  color: white;
+  padding: 4px 10px;
+  border-radius: 4px;
+  margin: 10px;
+}
+
+button:hover{
+  cursor: pointer;
+}
+
 .container{
   max-width: 1200px;
   margin: auto;
@@ -26,6 +48,33 @@ body{
 
 header{
   background-color: var(--color-main);
+}
+
+header .container{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+header a{
+  text-decoration: none;
+  color: inherit;  
+}
+
+header ul{
+  display: flex;
+  gap: 15px;
+}
+
+header .logo{
+  font-size: 2rem;
+  font-weight: 600;
+}
+
+/*  */
+
+header.secret{
+  background-color: var(--color-altern);
 }
 
 /* MAIN */

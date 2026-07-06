@@ -1,0 +1,19 @@
+<header>
+  <div class="container">
+    <div class="logo">
+      <a href="/">
+        Oso
+      </a>
+    </div>
+    <nav>
+      <ul>
+        <li><a href="/">Inicio</a></li>
+        <li><a href="/login">Login</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<% if (admin){ %>
+  <%- include('header-secret') %>
+<% } %>
