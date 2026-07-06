@@ -4,7 +4,7 @@ import cookieParser from "cookie-parser"
 import bcrypt from "bcrypt"
 import jwt from "jsonwebtoken"
 
-import { ROOT, PORT, HASH_USER_PASSWORD, SALT_ROUND, JWT_SECRET } from "./config.js"
+import { ROOT, PORT, HASH_USER_PASSWORD, SALT_ROUND, JWT_SECRET , BACKEND_URL , INTERNAL_BEARER_TOKEN} from "./config.js"
 
 const app = express()
 
@@ -22,7 +22,7 @@ function auth (req,res,next){
     req.user = jwt.verify(token, JWT_SECRET)
     next()
   } catch (error) {
-    return res.render('403', { admin: req.user.admin })
+    return res.status(403).render('403', { admin: req.user.admin })
   }
 }
 
@@ -82,7 +82,7 @@ app.post('/login', async (req, res) => {
   const token = jwt.sign(
     { admin: true },
     JWT_SECRET,
-    { expiresIn: '1h' }
+    { expiresIn: '24h' }
   )
 
   res
@@ -98,6 +98,21 @@ app.post('/logout', (req, res) => {
   res
     .clearCookie('token')
     .sendStatus(204)
+})
+
+app.get('/notes', auth , async(req,res)=>{
+
+  // hay que entregar el bearer token tambien para que la api haga una segunda confirmacion de identidad
+
+  const result = await fetch(`${BACKEND_URL}/personal/notes`,{
+    headers : {
+      "Autorization" : INTERNAL_BEARER_TOKEN
+    }
+  })
+  const data = await result.json()
+
+  res.json(data)
+
 })
 
 // APP INIT: =====================================================

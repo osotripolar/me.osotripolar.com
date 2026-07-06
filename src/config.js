@@ -13,5 +13,7 @@ export const SALT_ROUND = Number(process.env.SALT_ROUND) || 10
 
 export const {
   HASH_USER_PASSWORD,
-  JWT_SECRET
+  JWT_SECRET,
+  BACKEND_URL,
+  INTERNAL_BEARER_TOKEN
 } = process.env 

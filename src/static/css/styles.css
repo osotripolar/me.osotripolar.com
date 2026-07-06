@@ -38,6 +38,7 @@ button:hover{
 
 .container{
   max-width: 1200px;
+  width: 95%;
   margin: auto;
   text-align: center;
 }
