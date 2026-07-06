@@ -102,13 +102,16 @@ app.post('/logout', (req, res) => {
 
 app.get('/notes', auth , async(req,res)=>{
 
-  // hay que entregar el bearer token tambien para que la api haga una segunda confirmacion de identidad
-
   const result = await fetch(`${BACKEND_URL}/personal/notes`,{
     headers : {
       "Autorization" : INTERNAL_BEARER_TOKEN
     }
   })
+
+  if (!result.ok) {
+    return res.sendStatus(500)
+  }
+
   const data = await result.json()
 
   res.json(data)
