@@ -16,4 +16,4 @@ export const {
   JWT_SECRET,
   BACKEND_URL,
   INTERNAL_BEARER_TOKEN
-} = process.env 
+} = process.env  

@@ -1,10 +1,12 @@
 import path from "node:path"
 import express from "express"
 import cookieParser from "cookie-parser"
-import bcrypt from "bcrypt"
 import jwt from "jsonwebtoken"
 
-import { ROOT, PORT, HASH_USER_PASSWORD, SALT_ROUND, JWT_SECRET , BACKEND_URL , INTERNAL_BEARER_TOKEN} from "./config.js"
+import { ROOT, PORT, JWT_SECRET, BACKEND_URL, INTERNAL_BEARER_TOKEN } from "./config.js"
+
+import pagesRouter from "./routers/pages.routes.js"
+import apiRouter from "./routers/api.routes.js"
 
 const app = express()
 
@@ -16,7 +18,7 @@ app.set('views', path.join(ROOT, 'views'))
 
 // MIDDLEHWERES II =============================================
 
-function auth (req,res,next){
+function auth(req, res, next) {
   try {
     const { token } = req.cookies
     req.user = jwt.verify(token, JWT_SECRET)
@@ -24,11 +26,12 @@ function auth (req,res,next){
   } catch (error) {
     return res.status(403).render('403', { admin: req.user.admin })
   }
-}
+} 
 
 // SITES =========================================================
 app.use(express.static(path.join(ROOT, 'static')))
 
+// con esto vemos credenciales
 app.use((req, res, next) => {
   try {
 
@@ -52,71 +55,8 @@ app.use((req, res, next) => {
   }
 })
 
-app.get('/', (req, res) => {
-  res.render('index', { admin: req.user.admin })
-})
-
-app.get('/login', (req, res) => {
-  res.render('login', { admin: req.user.admin })
-})
-
-app.get('/protected', auth, (req, res) => {
-  res.render('protected', { admin: req.user.admin })
-})
-
-
-app.post('/login', async (req, res) => {
-
-  const { password } = req.body
-  const hashPassword = await bcrypt.hash(password, SALT_ROUND)
-
-  // console.log('el input ingresado: ', password)
-  // console.log('su hash es: ', hashPassword)
-
-  const isValid = await bcrypt.compare(password, HASH_USER_PASSWORD)
-
-  if (!isValid) {
-    return res.sendStatus(401)
-  }
-
-  const token = jwt.sign(
-    { admin: true },
-    JWT_SECRET,
-    { expiresIn: '24h' }
-  )
-
-  res
-    .cookie('token', token, {
-      httpOnly: true,
-      secure: true,
-      nameSite: "strict"
-    })
-    .sendStatus(204)
-})
-
-app.post('/logout', (req, res) => {
-  res
-    .clearCookie('token')
-    .sendStatus(204)
-})
-
-app.get('/notes', auth , async(req,res)=>{
-
-  const result = await fetch(`${BACKEND_URL}/personal/notes`,{
-    headers : {
-      "Autorization" : INTERNAL_BEARER_TOKEN
-    }
-  })
-
-  if (!result.ok) {
-    return res.sendStatus(500)
-  }
-
-  const data = await result.json()
-
-  res.json(data)
-
-})
+app.use(pagesRouter)
+app.use('/api',apiRouter)
 
 // APP INIT: =====================================================
 
