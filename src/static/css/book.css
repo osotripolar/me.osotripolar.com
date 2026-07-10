@@ -1,0 +1,152 @@
+main {
+  padding: 15px 0;
+}
+
+main i {
+  height: 30px;
+  width: 30px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: 1px solid gray;
+  border-radius: 3px;
+  color: gray;
+  cursor: pointer;
+}
+
+/* NOTES GROUP */
+
+.notesGroup{
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  transform: translateX(-100%);
+
+  background-color: var(--color-main);
+  transition: transform 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px 0;
+}
+
+.notesGroup.show{
+  transform: translateX(0%);
+}
+
+.notesGroup .form {
+  display: flex;
+  flex-direction: column;
+  background-color: rgba(0, 0, 0, 0.2);
+  padding: 15px 30px;
+  border-radius: 12px;
+  margin-top: auto;
+  justify-content: center;
+  align-items: center;
+}
+
+.notesGroup .form input {
+  width: 100%;
+}
+
+.notesGroup .form button {
+  width: fit-content;
+}
+
+.notesGroup ul li {
+  font-size: 20px;
+  cursor: pointer;
+  text-align: center;
+}
+
+.notesGroup ul li.selected {
+  font-weight: 600;
+  text-decoration: underline;
+}
+
+/* NOTES */
+
+.notes .container{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 25px;
+}
+
+.notes .title{
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.notes .title h2{
+  margin: 0;
+}
+
+.notes .form{
+  display: flex;
+  gap: 12px;
+  width: 100%;
+}
+
+.notes .form button{
+  margin: 0;
+}
+
+.notes .form input{
+  flex: 1;
+}
+
+.notes-container{
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.note{
+  background-color:white;
+  border: 1px solid var(--color-main);
+  padding: 8px 12px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.note p{
+  margin: 0;
+}
+
+.note i{
+  color: red;
+}
+
+@media screen and (min-width: 800px) {
+
+  #openGroup,
+  #closeGroup{
+    display: none;
+  }
+
+  main{
+    display: flex;
+    padding: 0;
+  }
+
+  .notesGroup {
+    transform: translateX(0%);
+    position: static;
+    width: 300px;
+  }
+
+  .notes{
+    flex: 1;
+    padding: 20px;
+  }
+}

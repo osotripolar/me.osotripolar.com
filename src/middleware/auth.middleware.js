@@ -7,7 +7,6 @@ export const isAuthPage = (req, res, next) => {
     req.user = jwt.verify(token, JWT_SECRET)
     return next()
   } catch (error) {
-    console.log(error)
     return res.status(403).render('403', { admin: req.user.admin })
   }
 }

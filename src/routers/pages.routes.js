@@ -51,8 +51,8 @@ router.post('/logout', (req, res) => {
 
 // RUTAS  PROTEGIDAS ============================
 
-router.get('/protected', isAuthPage, (req, res) => {
-  res.render('protected', { admin: req.user.admin })
+router.get('/book', isAuthPage, (req, res) => {
+  res.render('book', { admin: req.user.admin })
 })
 
 export default router

@@ -1,8 +1,10 @@
-import { Router } from "express";
+import { json, Router } from "express";
 import { isAuthApi } from "../middleware/auth.middleware.js";
 import { INTERNAL_BEARER_TOKEN, BACKEND_URL } from "../config.js";
 
 const router = Router()
+
+// NOTES
 
 router.get('/notes', isAuthApi, async (req, res) => {
 
@@ -28,9 +30,6 @@ router.post('/note', isAuthApi, async (req, res) => {
 
     const { content, group_id } = req.body
 
-    console.log(content, group_id)
-
-
     if (!content) {
       return res.sendStatus(400)
     }
@@ -52,7 +51,8 @@ router.post('/note', isAuthApi, async (req, res) => {
       return res.sendStatus(400)
     }
 
-    return res.sendStatus(201)
+    const data = await result.json()
+    return res.status(201).json(data)
 
   } catch (error) {
     console.log(error)
@@ -87,6 +87,62 @@ router.delete('/note/:id', isAuthApi, async (req, res) => {
   } catch (error) {
     return res.sendStatus(500)
   }
+})
+
+// NOTEGROUP
+
+router.get('/notegroup', isAuthApi ,async (req,res)=>{
+
+  const result = await fetch(`${BACKEND_URL}/personal/notegroup`, {
+    headers: {
+      Authorization: `${INTERNAL_BEARER_TOKEN}`
+    }
+  })
+
+  if(!result.ok){
+    return res.sendStatus(403)
+  }
+
+  const data = await result.json()
+  return res.json(data)
+  
+})
+
+router.post('/notegroup', isAuthApi, async (req, res) => {
+
+  try {
+
+    const { name } = req.body
+
+    
+    if (!name) {
+      return res.sendStatus(400)
+    }
+    
+    const result = await fetch(`${BACKEND_URL}/personal/notegroup`, {
+      method: 'POST',
+      headers: {
+        Authorization: INTERNAL_BEARER_TOKEN,
+        'Content-type': 'application/json'
+      },
+      body: JSON.stringify({
+        name: name
+      })
+
+    });
+
+    if (!result.ok) {
+      console.log(result.status)
+      return res.sendStatus(400)
+    }
+
+    return res.sendStatus(201)
+
+  } catch (error) {
+    console.log(error)
+    return res.sendStatus(500)
+  }
+
 })
 
 export default router
