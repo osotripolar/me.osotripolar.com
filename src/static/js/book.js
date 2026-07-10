@@ -20,25 +20,23 @@ let dataNoteGroup
 
 notesContainer.addEventListener('click',async(e)=>{
   if(e.target.tagName != 'I') return
-  const {id} = e.target.closest('.note').dataset
+  const idNote = e.target.closest('.note').dataset.id
 
-
-  // hacer un fetch de tipo DELETE
-  const result = await deleteNote(id)
+  const result = await deleteNote(idNote)
 
   if(!result) {
     console.log('hubo error al borrar')
     return
   }else{
-    const index = dataNotes.findIndex(nota => nota.id == id);
+    const index = dataNotes.findIndex(nota => nota.id == idNote);
 
     if (index !== -1) {
       dataNotes.splice(index, 1);
     }
     
-    let { idG } = notesContainer.dataset
-    if (typeof idG == 'undefined') idG = null
-    paintNotes(idG)
+    let { id } = notesContainer.dataset
+    if (typeof id == 'undefined') id = null
+    paintNotes(id)
   }
 
 })
@@ -130,6 +128,7 @@ function paintNoteGroup(){
 }
 
 function paintNotes(group = null){
+  inputAddNote.value = ''
   // esto mas bien no deberia depender de nadie, lo que deberiamos seterar solo es el data.id de ".notes-container"
 
   if(group){
