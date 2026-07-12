@@ -19,7 +19,7 @@ main {
 
 /* NOTES GROUP */
 
-.notesGroup{
+.notesGroup {
   position: fixed;
   top: 0;
   bottom: 0;
@@ -32,10 +32,10 @@ main {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 20px 0;
+  padding: 20px 20px;
 }
 
-.notesGroup.show{
+.notesGroup.show {
   transform: translateX(0%);
 }
 
@@ -58,66 +58,89 @@ main {
   width: fit-content;
 }
 
-.notesGroup ul{
+.notesGroup ul {
   display: flex;
   flex-direction: column;
   gap: 10px;
+  width: 100%;
 }
 
 .notesGroup ul li {
   font-size: 20px;
   cursor: pointer;
   text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 8px;
+  border-radius: 5px;
 }
 
-.notesGroup ul li.selected {
+.notesGroup ul li i {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.2rem;
+  height: 1.2rem;
+  margin-left: 15px;
+  
+
+  border-radius: 2px;
+  background-color: rgba(0, 0, 0, 0.2);
+}
+
+.notesGroup ul li p {
+  margin: 0;
+}
+
+.notesGroup ul li.selected p {
   font-weight: 600;
   text-decoration: underline;
 }
 
 /* NOTES */
 
-.notes .container{
+.notes .container {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 25px;
 }
 
-.notes .title{
+.notes .title {
   display: flex;
   align-items: center;
   justify-content: space-between;
   width: 100%;
 }
 
-.notes .title h2{
+.notes .title h2 {
   margin: 0;
 }
 
-.notes .form{
+.notes .form {
   display: flex;
   gap: 12px;
   width: 100%;
 }
 
-.notes .form button{
+.notes .form button {
   margin: 0;
 }
 
-.notes .form input{
+.notes .form input {
   flex: 1;
 }
 
-.notes-container{
+.notes-container {
   width: 100%;
   display: flex;
   flex-direction: column;
   gap: 8px;
 }
 
-.note{
-  background-color:white;
+.note {
+  background-color: white;
   border: 1px solid var(--color-main);
   padding: 8px 12px;
   border-radius: 10px;
@@ -127,7 +150,7 @@ main {
   justify-content: space-between;
 }
 
-.note p{
+.note p {
   margin: 0;
   flex: 1;
   min-width: 0;
@@ -135,7 +158,7 @@ main {
   text-align: left;
 }
 
-.note i{
+.note i {
   cursor: pointer;
   color: black;
   background-color: var(--color-altern);
@@ -153,11 +176,11 @@ main {
 @media screen and (min-width: 800px) {
 
   #openGroup,
-  #closeGroup{
+  #closeGroup {
     display: none;
   }
 
-  main{
+  main {
     display: flex;
     padding: 0;
   }
@@ -165,11 +188,25 @@ main {
   .notesGroup {
     transform: translateX(0%);
     position: static;
-    width: 300px;
+    width: 350px;
   }
 
-  .notes{
+  .notes {
     flex: 1;
     padding: 20px;
+  }
+
+  .notesGroup ul {
+    list-style-type: disc;
+  }
+
+  .notesGroup ul li {
+    justify-content: left;
+    list-style-type: circle;
+    justify-content: space-between;
+  }
+
+  .notesGroup ul li:hover{
+    background-color: rgba(0, 0, 0, 0.2);
   }
 }

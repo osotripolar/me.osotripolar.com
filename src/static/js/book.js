@@ -18,24 +18,25 @@ let dataNoteGroup
 
 // LISTENERS ===============================================
 
-notesContainer.addEventListener('click',async(e)=>{
-  if(e.target.tagName != 'I') return
+notesContainer.addEventListener('click', async (e) => {
+  if (e.target.tagName != 'I') return
   const idNote = e.target.closest('.note').dataset.id
 
   const result = await deleteNote(idNote)
 
-  if(!result) {
+  if (!result) {
+    // habría que poner un toast
     console.log('hubo error al borrar')
     return
-  }else{
+  } else {
     const index = dataNotes.findIndex(nota => nota.id == idNote);
 
     if (index !== -1) {
       dataNotes.splice(index, 1);
     }
-    
+
     let { id } = notesContainer.dataset
-    if (typeof id == 'undefined') id = null
+
     paintNotes(id)
   }
 
@@ -47,22 +48,21 @@ inputAddNote.addEventListener('keydown', (e) => {
   }
 })
 
-btnAddNote.addEventListener('click', async (e)=>{
-  if(!inputAddNote.value) return
+btnAddNote.addEventListener('click', async (e) => {
+  if (!inputAddNote.value) return
 
-  let {id} = notesContainer.dataset
+  let { id } = notesContainer.dataset
 
-  if(typeof id == 'undefined') id = null
+  if (typeof id == 'undefined') id = null
 
   const data = await postNote(inputAddNote.value, id)
 
-  if(!data) {
+  if (!data) {
     console.log('hubo un problema')
     return
-  }else{
+  } else {
     dataNotes.push(data)
-    let {id} = notesContainer.dataset
-    if(typeof id == 'undefined') id = null
+    let { id } = notesContainer.dataset
     paintNotes(id)
   }
 
@@ -70,112 +70,168 @@ btnAddNote.addEventListener('click', async (e)=>{
   inputAddNote.focus()
 })
 
-inputGroup.addEventListener('keydown',(e)=>{
-  if (e.key == 'Enter' && inputGroup.value){
+inputGroup.addEventListener('keydown', (e) => {
+  if (e.key == 'Enter' && inputGroup.value) {
     buttonGroup.click()
   }
 })
 
-buttonGroup.addEventListener('click', async ()=>{
+buttonGroup.addEventListener('click', async () => {
 
-  if(!inputGroup.value) return
+  if (!inputGroup.value) return
 
   const data = await postNoteGroup(inputGroup.value)
 
-  if(typeof data == 'undefined') return
+  if (typeof data == 'undefined') return
 
-  const li = el('li', undefined, inputGroup.value)
+  dataNoteGroup.push(data)
+
+  const li = el('li')
+  li.setAttribute('data-id', data.id)
+  li.innerHTML=`
+  <p>${data.name}</p>
+  <i class="bi bi-x"></i>
+  `
   ulGroup.appendChild(li)
-  
-  inputGroup.value = ''
-  inputGroup.focus()
-})
 
-ulGroup.addEventListener('click',(e)=>{
-
-  if (e.target.tagName != 'LI') return
-  
-  const element = e.target
-  const id = element.getAttribute('data-id')
-
-  ulGroup.querySelectorAll('li').forEach(item => {
-    item.classList.remove('selected')
-  })
-
-  element.classList.add('selected')
+  dashNoteGroup(data.id)
+  paintNotes(data.id)
   group.classList.remove('show')
-  paintNotes(id)
+  inputGroup.value = ''
+  inputAddNote.focus()
 })
 
-openGroup.addEventListener('click',()=>{
+ulGroup.addEventListener('click', async(e) => {
+
+  if (e.target.tagName == 'P' || e.target.tagName == 'LI'){
+    const id = e.target.closest('li').getAttribute('data-id')
+    dashNoteGroup(id)
+    paintNotes(id)
+    group.classList.remove('show')
+  }
+
+  if(e.target.tagName == 'I'){
+    const id = e.target.closest('li').getAttribute('data-id')
+
+    const result = await deleteNoteGroup(id)
+
+    if(!result){
+      // habría que poner un toast
+      console.log('Hubo un error inesperado')
+      return
+    }else{
+      const index = dataNoteGroup.findIndex(nota => nota.id == id);
+
+      if (index !== -1) {
+        dataNoteGroup.splice(index, 1);
+      }else{
+        console.log('hubo otro tipo derror revisar codigo')
+      }
+      e.target.closest('li').remove()
+      
+      // modificacion del estado
+      // modificacion de render:
+      // - quitar del dom
+      // - si estaba activo ese item entonces cambiar a la vista de notas en general
+    }
+  }
+
+})
+
+openGroup.addEventListener('click', () => {
   group.classList.add('show')
 })
 
-closeGroup.addEventListener('click',()=>{
+closeGroup.addEventListener('click', () => {
   group.classList.remove('show')
 })
 
 // RENDER FUNCTIONS ========================================
 
-function paintNoteGroup(){
-  ulGroup.innerHTML = '<li class="selected">Notas Sueltas</li>'
+function paintNoteGroup() {
+  ulGroup.innerHTML = '<li class="selected"><p>Notas Sueltas</p></li>'
 
+  if(!(dataNoteGroup.length > 0)) return
+
+
+  const fragment = document.createElement
+  
   dataNoteGroup.forEach(element => {
-    const li = el('li',undefined,element.name)
-    li.setAttribute('data-id',element.id)
-    ulGroup.appendChild(li) 
+
+    const li = el('li', undefined, element.name)
+    li.innerHTML = `
+    <p>${element.name}</p>
+    <i class="bi bi-x"></i>
+    `
+
+    li.setAttribute('data-id', element.id)
+    ulGroup.appendChild(li)
   });
 }
 
-function paintNotes(group = null){
-  inputAddNote.value = ''
-  // esto mas bien no deberia depender de nadie, lo que deberiamos seterar solo es el data.id de ".notes-container"
+function paintNotes(idGroup) {
 
-  if(group){
+  if (idGroup){
+    const { name } = dataNoteGroup.filter(e => e.id == idGroup)[0]
 
-    const {name} = dataNoteGroup.filter(e=>e.id == group)[0]
-
-    notesContainer.setAttribute('data-id',group)
+    notesContainer.dataset.id = idGroup
     notesNameGroup.textContent = name
   }else{
-    notesContainer.removeAttribute('data-id')
     notesNameGroup.textContent = 'Notas Sueltas'
+    notesContainer.removeAttribute('data-id')
   }
 
-  const dataFilter = dataNotes.filter(e=> e.group_id == group)
+  let { id } = notesContainer.dataset
+  if (typeof id == 'undefined') id = null
 
-  if(dataFilter.length == 0){
+  const dataFiltereddddd = dataNotes.filter(e => e.group_id == id)
+
+  if (dataFiltereddddd.length != 0) {
+
+    const fragment = document.createDocumentFragment()
+
+    dataFiltereddddd.forEach(e => {
+      const div = el('div', 'note')
+      const p = el('p', undefined, e.content)
+      const i = el('i', 'bi bi-x')
+
+      div.setAttribute('data-id', e.id)
+
+      div.appendChild(p)
+      div.appendChild(i)
+
+      fragment.appendChild(div)
+    })
+
+    notesContainer.replaceChildren(fragment)
+
+  } else {
     notesContainer.innerHTML = '<p>No hay notas aún</p>'
-    return
   }
 
-  const fragment = document.createDocumentFragment()
-  
-  dataFilter.forEach(e =>{
-
-    const div = el('div','note')
-    const p = el('p',undefined,e.content)
-    const i = el('i','bi bi-x')
-
-    div.setAttribute('data-id',e.id)
-
-    div.appendChild(p)
-    div.appendChild(i)
-
-    fragment.appendChild(div)
-  })
-
-  notesContainer.replaceChildren(fragment)
-  
-  // reemplazar contenido
-
+  inputAddNote.value = ''
 }
 
 // idk functions ===========================================
+function dashNoteGroup(id) {
+  // limpiamos todoslos campos
+  ulGroup.querySelectorAll('li').forEach(item => {
+    item.removeAttribute('class')
+  })
 
-// asignar al estado la info 
-// si no se puede hacer entonces mostrar un popup
-async function init(){
+  if(id){
+    const li = ulGroup.querySelector(`li[data-id="${id}"]`)
+    li.classList.add('selected')
+  }else{
+    ulGroup.querySelector('li').classList.add('selected')
+  }
+
+}
+
+async function init() {
+  ulGroup.querySelectorAll('li').forEach(item => {
+    item.classList.remove('selected')
+  })
 
   const noteGroupData = await getNoteGroup()
   const notes = await getNotes()
@@ -200,10 +256,10 @@ async function init(){
 
 // FETCH FUNCTIONS =========================================
 
-async function getNotes(){
+async function getNotes() {
   const result = await fetch('/api/notes')
 
-  if(!result.ok){
+  if (!result.ok) {
     console.log('Algo salio mal al pedir los datos')
     return
   }
@@ -234,7 +290,7 @@ async function postNote(content, group_id = null) {
 
 }
 
-async function deleteNote(id){
+async function deleteNote(id) {
   const result = await fetch(`/api/note/${id}`, {
     method: 'DELETE'
   })
@@ -246,10 +302,10 @@ async function deleteNote(id){
   }
 }
 
-async function getNoteGroup(){
+async function getNoteGroup() {
   const result = await fetch('/api/notegroup')
 
-  if(!result.ok){
+  if (!result.ok) {
     console.log('Algo salio mal al pedir los datos')
     return
   }
@@ -275,7 +331,20 @@ async function postNoteGroup(name) {
     return
   }
 
-  return true
+  const data = await result.json()
+  return data
+}
+
+async function deleteNoteGroup(id) {
+  const result = await fetch(`/api/notegroup/${id}`, {
+    method: 'DELETE'
+  })
+
+  if (!result.ok) {
+    return
+  } else {
+    return true
+  }
 }
 
 // APP INIT ================================================
