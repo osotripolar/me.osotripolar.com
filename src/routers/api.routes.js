@@ -89,6 +89,43 @@ router.delete('/note/:id', isAuthApi, async (req, res) => {
   }
 })
 
+router.put('/note/:id', isAuthApi, async (req, res) => {
+  
+  try {
+    
+    const {id} = req.params
+    const { content, group_id } = req.body
+
+    if (!content || !id) {
+      console.log(content,group_id,id)
+      return res.sendStatus(400)
+    }
+
+    const result = await fetch(`${BACKEND_URL}/personal/note/${id}`, {
+      method: 'PUT',
+      headers: {
+        Authorization: INTERNAL_BEARER_TOKEN,
+        'Content-type': 'application/json'
+      },
+      body: JSON.stringify({
+        content: content,
+        group_id: group_id
+      })
+
+    });
+
+    if (!result.ok) {
+      return res.sendStatus(400)
+    }else{
+      return res.sendStatus(200)
+    }
+  } catch (error) {
+    console.log(error)
+    return res.sendStatus(500)
+  }
+
+})
+
 // NOTEGROUP
 
 router.get('/notegroup', isAuthApi ,async (req,res)=>{
@@ -145,7 +182,6 @@ router.post('/notegroup', isAuthApi, async (req, res) => {
   }
 
 })
-
 
 router.delete('/notegroup/:id', isAuthApi, async (req, res) => {
 

@@ -1,3 +1,5 @@
+@import "./modal.css";
+
 :root{
   --color-main: rgb(240, 137, 246);
   --color-altern: rgb(204, 246, 137);
@@ -92,3 +94,4 @@ footer{
 
 @media screen and (min-width: 800px) {
 }
+

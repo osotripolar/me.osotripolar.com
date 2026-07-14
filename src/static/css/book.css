@@ -98,6 +98,7 @@ main {
   text-decoration: underline;
 }
 
+
 /* NOTES */
 
 .notes .container {
@@ -169,8 +170,16 @@ main {
 
   font-size: 22px;
 
-  width: 0.95em;
-  height: 0.95em;
+  width: 22px;
+  height: 22px;
+}
+
+.note i.bi-pencil-fill{
+  font-size: 15px;
+}
+.note i.bi-x{
+  background-color: rgb(255, 129, 129);
+  font-size: 15px;
 }
 
 @media screen and (min-width: 800px) {
