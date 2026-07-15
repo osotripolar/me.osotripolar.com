@@ -1,22 +1,10 @@
 import { el } from "../utils/createElements.js";
 
+// AÑADIENDO AL DOM ================================
 const modalContainer = el('div', 'modal-container hidden')
 document.body.appendChild(modalContainer)
 
-// XD
-
-const modalConfirm = '<div>xdd<div>'
-
-// FUNCIONES A EXPORTAR
-export function messageModal() {
-
-  const div = el('div', 'modal')
-  div.innerHTML = modalConfirm
-
-  modalContainer.appendChild(div)
-  modalContainer.classList.remove('hidden')
-  // aparte hay que añadirle el otro
-}
+// FUNCIONES A EXPORTAR ============================
 
 // ME GUSTARÍA PODER HACER DE INPUTmODAL UNIFICARLO Y QUE SEA MAS FLEXIBLE 
 // TENIENDO UN PARAMETRO DE ENTRADA UN OBJETO donde ponemos las configuraciones
@@ -27,10 +15,14 @@ export function inputModal(text = undefined) {
   const ele = el('div', 'modal')
 
   ele.innerHTML = `
-  <label for="">Edit:</label>
-  <input type="text">
-  <button>Enviar</button>
-  <button>Cancelar</button>
+  <div>
+    <label for="">Edit:</label>
+    <input type="text">
+  </div>
+  <div>
+    <button>Enviar</button>
+    <button>Cancelar</button>
+  </div>
   `
 
   modalContainer.replaceChildren(ele)
@@ -97,14 +89,20 @@ export function inputModalBi(text, array, options) {
 
   const { content, group_id } = text
 
-  const modal = el('div', 'modal')
+  const modal = el('div', 'modal modal--input')
 
   modal.innerHTML = `
-  <label for="content">Edit:</label>
-  <input type="text" id="content">
-  <label for="group">Group</label>
-  <select name="group" id="group">
+  
+  <div>
+    <label for="content">Edit:</label>
+    <input type="text" id="content">
+  </div>
+  
+  <div>
+    <label for="group">Group: </label>
+    <select name="group" id="group">
   </select>
+  </div>
 
   <div>
     <button>Enviar</button>
@@ -134,7 +132,7 @@ export function inputModalBi(text, array, options) {
 
     select.replaceChildren(fragment)
 
-    if(options.idOption){
+    if (options.idOption) {
       select.value = options.idOption
     }
 
@@ -210,4 +208,33 @@ export function inputModalBi(text, array, options) {
 
 }
 
-// falta resaltar el objeto por defecto
+export function modalConfirm(options) {
+
+  const {question, title} = options
+  
+  modalContainer.classList.remove('hidden')
+
+  const ele = el('div', 'modal')
+
+  ele.innerHTML = `
+  ${title ? `<h3>${title}</h3>` : ""}
+  ${question ? `<p>${question}</p>` : ""}
+  <div>
+  <button>Si</button>
+  <button>No</button>
+  </div>
+  `
+  modalContainer.replaceChildren(ele)
+
+  return new Promise((resolve, reject) => {
+    ele.addEventListener('click', (e) => {
+      if (e.target.tagName != 'BUTTON') return
+
+      if (e.target.textContent == 'Si') resolve(true)
+      if (e.target.textContent == 'No') resolve(false)
+
+      modalContainer.replaceChildren()
+      modalContainer.classList.add('hidden')
+    })
+  })
+}

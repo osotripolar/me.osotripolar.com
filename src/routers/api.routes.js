@@ -90,14 +90,13 @@ router.delete('/note/:id', isAuthApi, async (req, res) => {
 })
 
 router.put('/note/:id', isAuthApi, async (req, res) => {
-  
+
   try {
-    
-    const {id} = req.params
+
+    const { id } = req.params
     const { content, group_id } = req.body
 
     if (!content || !id) {
-      console.log(content,group_id,id)
       return res.sendStatus(400)
     }
 
@@ -116,7 +115,7 @@ router.put('/note/:id', isAuthApi, async (req, res) => {
 
     if (!result.ok) {
       return res.sendStatus(400)
-    }else{
+    } else {
       return res.sendStatus(200)
     }
   } catch (error) {
@@ -128,7 +127,7 @@ router.put('/note/:id', isAuthApi, async (req, res) => {
 
 // NOTEGROUP
 
-router.get('/notegroup', isAuthApi ,async (req,res)=>{
+router.get('/notegroup', isAuthApi, async (req, res) => {
 
   const result = await fetch(`${BACKEND_URL}/personal/notegroup`, {
     headers: {
@@ -136,13 +135,13 @@ router.get('/notegroup', isAuthApi ,async (req,res)=>{
     }
   })
 
-  if(!result.ok){
+  if (!result.ok) {
     return res.sendStatus(403)
   }
 
   const data = await result.json()
   return res.json(data)
-  
+
 })
 
 router.post('/notegroup', isAuthApi, async (req, res) => {
@@ -151,11 +150,11 @@ router.post('/notegroup', isAuthApi, async (req, res) => {
 
     const { name } = req.body
 
-    
+
     if (!name) {
       return res.sendStatus(400)
     }
-    
+
     const result = await fetch(`${BACKEND_URL}/personal/notegroup`, {
       method: 'POST',
       headers: {
@@ -200,8 +199,6 @@ router.delete('/notegroup/:id', isAuthApi, async (req, res) => {
       }
     })
 
-    console.log(result)
-
     if (!result.ok) {
       return res.sendStatus(402)
     }
@@ -212,6 +209,42 @@ router.delete('/notegroup/:id', isAuthApi, async (req, res) => {
     console.log(error)
     return res.sendStatus(500)
   }
+})
+
+
+router.put('/notegroup/:id', isAuthApi, async (req, res) => {
+
+  try {
+
+    const { id } = req.params
+    const { name } = req.body
+
+    if (!name || !id) {
+      return res.sendStatus(400)
+    }
+
+    const result = await fetch(`${BACKEND_URL}/personal/notegroup/${id}`, {
+      method: 'PUT',
+      headers: {
+        Authorization: INTERNAL_BEARER_TOKEN,
+        'Content-type': 'application/json'
+      },
+      body: JSON.stringify({
+        name: name
+      })
+
+    });
+
+    if (!result.ok) {
+      return res.sendStatus(400)
+    } else {
+      return res.sendStatus(200)
+    }
+  } catch (error) {
+    console.log(error)
+    return res.sendStatus(500)
+  }
+
 })
 
 export default router

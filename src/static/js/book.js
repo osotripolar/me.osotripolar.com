@@ -1,5 +1,5 @@
 import { el } from "./utils/createElements.js"
-import { inputModalBi } from "./components/modal.js"
+import { inputModal, inputModalBi, modalConfirm } from "./components/modal.js"
 
 const openGroup = document.getElementById('openGroup')
 const closeGroup = document.getElementById('closeGroup')
@@ -10,6 +10,7 @@ const ulGroup = group.querySelector('ul')
 
 const notesNameGroup = document.querySelector('.title h2')
 const notesContainer = document.querySelector('.notes-container')
+const notesTitle = document.querySelector('.notes .title')
 
 const inputAddNote = document.querySelector('.notes .form input')
 const btnAddNote = document.querySelector('.notes .form button')
@@ -17,7 +18,35 @@ const btnAddNote = document.querySelector('.notes .form button')
 let dataNotes
 let dataNoteGroup
 
+
 // LISTENERS ===============================================
+
+notesTitle.addEventListener('click', async (e) => {
+  if (e.target.tagName != 'I') return
+
+  const id = getIdNotesContainer()
+  const data = dataNoteGroup.find(e => e.id == id)
+
+  const newName = await inputModal(data.name, id)
+
+  // validación previa
+  if(!newName) return
+
+  const res = await putNoteGroup(id, newName)
+
+  if (!res) {
+    console.log('problemita toast: puedeque sea igual el input y x eso no tenga que hacer nada')
+  } else {
+
+    const originalNamew = notesTitle.querySelector('h2').textContent 
+
+    data.name = newName
+    notesTitle.querySelector('h2').textContent = data.name
+    paintNoteGroup()
+    dashNoteGroup(id)
+  }
+})
+
 
 notesContainer.addEventListener('click', async (e) => {
   if (e.target.tagName != 'I') return
@@ -35,11 +64,10 @@ notesContainer.addEventListener('click', async (e) => {
     })
 
     if (!response) return
-    
+
     const { content, group_id } = response
-    
+
     const res = await putNote(idNote, content, group_id)
-    
     if (!res) {
       console.log('toast: Hubo problemilla')
       return
@@ -147,6 +175,14 @@ ulGroup.addEventListener('click', async (e) => {
   if (e.target.tagName == 'I') {
     const id = e.target.closest('li').getAttribute('data-id')
 
+    const cantidad = dataNotes.filter(note => note.group_id == id)
+    if (cantidad.length) {
+      const message =  `Este grupo tiene ${cantidad.length} notas, se eliminaran definitivamente ¿Continuar?`
+      const modalResponse = await modalConfirm({question: message, title: "Eliminar "})
+      if (!modalResponse) return
+    }
+
+    // tambien deberíamos abrir un modal de confirmación para esto
     const result = await deleteNoteGroup(id)
 
     if (!result) {
@@ -163,10 +199,12 @@ ulGroup.addEventListener('click', async (e) => {
       }
       e.target.closest('li').remove()
 
-      // modificacion del estado
-      // modificacion de render:
-      // - quitar del dom
-      // - si estaba activo ese item entonces cambiar a la vista de notas en general
+      const idNotContainer = getIdNotesContainer()
+      if (idNotContainer == id) {
+        // pasar a la vista de Notes
+        paintNotes()
+        dashNoteGroup()
+      }
     }
   }
 
@@ -205,14 +243,17 @@ function paintNoteGroup() {
 
 function paintNotes(idGroup) {
 
+  const icon = notesTitle.querySelector('i')
+
   if (idGroup) {
     const { name } = dataNoteGroup.filter(e => e.id == idGroup)[0]
-
     notesContainer.dataset.id = idGroup
     notesNameGroup.textContent = name
+    icon.classList.remove('hidden')
   } else {
     notesNameGroup.textContent = 'Notas Sueltas'
     notesContainer.removeAttribute('data-id')
+    icon.classList.add('hidden')
   }
 
   let { id } = notesContainer.dataset
@@ -289,13 +330,6 @@ async function init() {
   dataNoteGroup = noteGroupData
   dataNotes = notes
 
-  console.log('======================')
-  console.log('dataNoteGroup')
-  console.log(dataNoteGroup)
-  console.log('dataNotes')
-  console.log(dataNotes)
-  console.log('======================')
-
   paintNotes()
   paintNoteGroup()
 }
@@ -350,12 +384,12 @@ async function deleteNote(id) {
 
 async function putNote(id, content, group_id) {
 
-  
+
   if (!id && !content) {
     console.log('no pasaste los parametros oe mongol')
     return
   }
-  
+
   const result = await fetch(`/api/note/${id}`, {
     method: 'PUT',
     headers: {
@@ -418,6 +452,31 @@ async function deleteNoteGroup(id) {
   } else {
     return true
   }
+}
+
+async function putNoteGroup(id, name) {
+
+  if (!id && !name) {
+    console.log('no pasaste los parametros oe mongol')
+    return
+  }
+
+  const result = await fetch(`/api/notegroup/${id}`, {
+    method: 'PUT',
+    headers: {
+      'Content-type': 'application/json'
+    },
+    body: JSON.stringify({
+      name: name,
+    })
+  })
+
+  if (!result.ok) {
+    return
+  } else {
+    return true
+  }
+
 }
 
 // APP INIT ================================================
