@@ -1,78 +1,147 @@
-import { el } from "../utils/createElements.js";
+import { el } from "../utils/htmElements.js";
 
 // AÑADIENDO AL DOM ================================
 const modalContainer = el('div', 'modal-container hidden')
+
 document.body.appendChild(modalContainer)
 
-// FUNCIONES A EXPORTAR ============================
+// SUPPORT FUNCTIONS ================================
 
-// ME GUSTARÍA PODER HACER DE INPUTmODAL UNIFICARLO Y QUE SEA MAS FLEXIBLE 
-// TENIENDO UN PARAMETRO DE ENTRADA UN OBJETO donde ponemos las configuraciones
+const nameIconDataClose = 'closeModal'
+const nameIconDataSend = 'sendModal'
 
-export function inputModal(text = undefined) {
+export function addCloseButton(modal, onclose){
+
+  // CLOSE BUTTONS
+  const iconClose = el('i','bi bi-x closeModal')
+  iconClose.dataset.action = nameIconDataClose
+
+  modal.appendChild(iconClose)
+  modal.addEventListener('click',(e)=>{
+    
+    const actionModal = e.target.dataset.action
+    if(actionModal == nameIconDataClose){
+      if(onclose) onclose()
+      closeModalContainer()
+    }
+  })
+}
+
+function focusAndSelectToEnd(input) {
+  input.focus();
+  // Selecciona desde el inicio hasta el final,
+  // dejando el cursor (focus) al final.
+  input.setSelectionRange(0, input.value.length, "forward");
+}
+
+// MODAL FUNCTIONS ================================
+
+export function closeModalContainer() {
+  modalContainer.replaceChildren()
+  modalContainer.classList.add('hidden')
+}
+
+export function modalConfirm(options) {
+
+  const { question, title } = options
+
   modalContainer.classList.remove('hidden')
 
-  const ele = el('div', 'modal')
+  const modal = el('div', 'modal')
 
-  ele.innerHTML = `
+  modal.innerHTML = `
+  ${title ? `<h3>${title}</h3>` : ""}
+  ${question ? `<p>${question}</p>` : ""}
   <div>
-    <label for="">Edit:</label>
-    <input type="text">
-  </div>
-  <div>
-    <button>Enviar</button>
-    <button>Cancelar</button>
+  <button data-action="${nameIconDataSend}">Si</button>
+  <button data-action="${nameIconDataClose}">No</button>
   </div>
   `
 
-  modalContainer.replaceChildren(ele)
+  modalContainer.replaceChildren(modal)
+
+  return new Promise((resolve, reject) => {
+    addCloseButton(modal,()=>{
+      resolve(null)
+      return
+    })
+
+    modal.addEventListener('click', (e) => {
+      if (e.target.tagName != 'BUTTON') return
+      if (e.target.dataset.action == nameIconDataSend) resolve(true)
+      closeModalContainer()
+    })
+  })
+}
+
+export function inputModal(options) {
+
+  // listado de opciones para este modal
+  const { text = null, title = null, label = null } = options
+
+  const modal = el('div', 'modal')
+
+  modal.innerHTML = `
+  ${title ? `<h3>${title}</h3>` : ""}
+  <div class="block-input">
+    <label for="">${label ? `${label}:` : "Edit: "}</label>
+    <input type="text" ${text ? `value="${text}"` : ""}>
+  </div>
+  <div>
+    <button>Enviar</button>
+    <button data-action="${nameIconDataClose}">Cancelar</button>
+  </div>
+  `
+
+  const input = modal.querySelector('input')
+
+  modalContainer.replaceChildren(modal)
+  modalContainer.classList.remove('hidden')
 
   return new Promise((resolve, reject) => {
 
-    const input = ele.querySelector('input')
+    addCloseButton(modal, () => {
+      resolve(null)
+      return
+    })
 
     input.addEventListener('keydown', (e) => {
       if (e.key === 'Enter') {
         enviarInfo()
-        modalContainer.replaceChildren()
-        modalContainer.classList.add('hidden')
+        closeModalContainer()
         return
       }
 
       if (e.key === 'Escape') {
         resolve(null)
-        modalContainer.replaceChildren()
-        modalContainer.classList.add('hidden')
+        closeModalContainer()
         return
       }
     })
 
-    input.focus()
+    focusAndSelectToEnd(input)
 
-    if (text !== undefined) {
-      input.value = text
-    }
-
-    ele.addEventListener('click', (e) => {
+    modal.addEventListener('click', (e) => {
       if (e.target.tagName != 'BUTTON') return
 
       if (e.target.textContent == 'Enviar') enviarInfo()
 
       if (e.target.textContent == 'Cancelar') resolve(null)
 
-      modalContainer.replaceChildren()
-      modalContainer.classList.add('hidden')
+      closeModalContainer()
     })
 
     function enviarInfo() {
       // VALIDAMOS ANTES DE EJECUTAR
-      if ((text === undefined) && (input.value == '')) {
+
+      if (input.value == '') {
         resolve(null)
       }
 
-      if (input.value == text) {
+      if (Boolean(text) && text == input.value) {
         resolve(null)
       }
+
       resolve(input.value) // ÚNICO CASO DONDE APLICA 
     }
 
@@ -80,51 +149,51 @@ export function inputModal(text = undefined) {
 
 }
 
-// variacion de esta funcion
-// debe recibir como parametro tambien un array de opciones validas
-// y esto debe retornar un objeto con datos de content y group_id
-// para poder hacer el fetch
+export function inputSelectModal(options) {
 
-export function inputModalBi(text, array, options) {
+  const {
+    arrayOptions = null,
+    originalContent = { content: null, group_id: null },
+    defaultOption = 'default option',
+    title = null,
+    labelInput = 'texto',
+    labelSelect = 'lista',
+    idOptionActive = null
+  } = options
 
-  const { content, group_id } = text
+  const { content, group_id } = originalContent
 
-  const modal = el('div', 'modal modal--input')
+  const modal = el('div', 'modal ')
 
   modal.innerHTML = `
-  
-  <div>
-    <label for="content">Edit:</label>
+  ${title ? `<h3>${title}</h3>` : ""}
+  <div class="block-input">
+    <label for="content">${labelInput} : </label>
     <input type="text" id="content">
-  </div>
-  
-  <div>
-    <label for="group">Group: </label>
+    <label for="group">${labelSelect} : </label>
     <select name="group" id="group">
-  </select>
+    </select>
   </div>
 
   <div>
     <button>Enviar</button>
-    <button>Cancelar</button>
+    <button data-action="${nameIconDataClose}">Cancelar</button>
   </div>
   `
-  modalContainer.replaceChildren(modal)
 
   const input = modal.querySelector('input')
   const select = modal.querySelector('select')
+  const fragment = document.createDocumentFragment()
 
-  if (array) {
 
-    const fragment = document.createDocumentFragment()
+  if (defaultOption) {
+    const option = el('option', undefined, defaultOption)
+    option.setAttribute('value', '')
+    fragment.appendChild(option)
+  }
 
-    if (options.defaultOption) {
-      const option = el('option', undefined, options.defaultOption)
-      option.setAttribute('value', '')
-      fragment.appendChild(option)
-    }
-
-    array.forEach(element => {
+  if (arrayOptions) {
+    arrayOptions.forEach(element => {
       const option = el('option', undefined, element.name)
       option.setAttribute('value', element.id)
       fragment.appendChild(option)
@@ -132,40 +201,40 @@ export function inputModalBi(text, array, options) {
 
     select.replaceChildren(fragment)
 
-    if (options.idOption) {
-      select.value = options.idOption
+    if (idOptionActive) {
+      select.value = idOptionActive
     }
-
-  } else {
-    console.log('error modal no hay array no hay array')
-    return
   }
 
+  modalContainer.replaceChildren(modal)
   modalContainer.classList.remove('hidden')
 
   return new Promise((resolve, reject) => {
 
+    addCloseButton(modal, () => {
+      resolve(null)
+      return
+    })
+
     input.addEventListener('keydown', (e) => {
       if (e.key === 'Enter') {
         enviarInfo()
-        modalContainer.replaceChildren()
-        modalContainer.classList.add('hidden')
+        closeModalContainer()
         return
       }
 
       if (e.key === 'Escape') {
         resolve(null)
-        modalContainer.replaceChildren()
-        modalContainer.classList.add('hidden')
+        closeModalContainer()
         return
       }
     })
 
-    input.focus()
-
     if (content !== undefined) {
       input.value = content
     }
+
+    focusAndSelectToEnd(input)
 
     modal.addEventListener('click', (e) => {
 
@@ -173,10 +242,7 @@ export function inputModalBi(text, array, options) {
 
       if (e.target.textContent == 'Enviar') enviarInfo()
 
-      if (e.target.textContent == 'Cancelar') resolve(null)
-
-      modalContainer.replaceChildren()
-      modalContainer.classList.add('hidden')
+      closeModalContainer()
     })
 
     function enviarInfo() {
@@ -184,7 +250,6 @@ export function inputModalBi(text, array, options) {
       const idSelect = getSelecValue()
 
       if (content == input.value && group_id == idSelect) {
-        console.log('no paso na, resolvimos null')
         resolve(null)
         return
       }
@@ -194,7 +259,6 @@ export function inputModalBi(text, array, options) {
         group_id: idSelect
       })
     }
-
   })
 
   function getSelecValue() {
@@ -208,33 +272,9 @@ export function inputModalBi(text, array, options) {
 
 }
 
-export function modalConfirm(options) {
-
-  const {question, title} = options
-  
+export function modalPersonal(modal) {
   modalContainer.classList.remove('hidden')
+  modalContainer.replaceChildren(modal)
 
-  const ele = el('div', 'modal')
-
-  ele.innerHTML = `
-  ${title ? `<h3>${title}</h3>` : ""}
-  ${question ? `<p>${question}</p>` : ""}
-  <div>
-  <button>Si</button>
-  <button>No</button>
-  </div>
-  `
-  modalContainer.replaceChildren(ele)
-
-  return new Promise((resolve, reject) => {
-    ele.addEventListener('click', (e) => {
-      if (e.target.tagName != 'BUTTON') return
-
-      if (e.target.textContent == 'Si') resolve(true)
-      if (e.target.textContent == 'No') resolve(false)
-
-      modalContainer.replaceChildren()
-      modalContainer.classList.add('hidden')
-    })
-  })
+  addCloseButton(modal)
 }

@@ -15,6 +15,13 @@ main {
   border-radius: 3px;
   color: gray;
   cursor: pointer;
+  background-color: transparent;
+}
+
+#openGroup{
+  position: absolute;
+  top: 0;
+  right: 0;
 }
 
 /* NOTES GROUP */
@@ -22,6 +29,7 @@ main {
 .notesGroup {
   position: fixed;
   inset: 0;
+  z-index: 2;
 
   display: flex;
   flex-direction: column;
@@ -108,19 +116,14 @@ main {
 }
 
 .notes .title {
+  flex-direction: column;
   display: flex;
-  align-items: center;
   justify-content: space-between;
   width: 100%;
+  position: relative;
 }
 
-.notes .title__container {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.notes .title__container i {
+.notes .title i {
   cursor: pointer;
   color: white;
   background-color: gray;
@@ -135,13 +138,19 @@ main {
   height: 22px;
 }
 
-.notes .title__container i.hidden {
+.notes .title i.hidden {
   display: none;
 }
 
 
 .notes .title h2 {
   margin: 0;
+}
+
+.notes .title-title{
+  display: flex;
+  align-items: center;
+  gap: 14px;
 }
 
 .notes .form {

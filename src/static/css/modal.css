@@ -1,16 +1,18 @@
-.modal-container{
-  position: absolute;
+/* CONTAINER ================ */
+
+.modal-container {
+  position: fixed;
   background-color: rgba(0, 0, 0, 0.5);
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
+  z-index: 4;
+
+  inset: 0;
 
   display: flex;
   justify-content: center;
   align-items: center;
 
   opacity: 1;
+  transition: opacity 0.4s ease;
 }
 
 .modal-container.hidden{
@@ -18,7 +20,9 @@
   pointer-events: none;
 }
 
-.modal{
+/* MODALS: GENERALES  ================ */
+
+.modal {
   width: 80%;
   max-width: 480px;
   border-radius: 10px;
@@ -29,29 +33,91 @@
   gap: 10px;
   align-items: center;
   justify-content: center;
+  text-align: center;
+  position: relative;
 }
 
 .modal p,
-.modal h3{
-  text-align: center;
+.modal h1,
+.modal h2,
+.modal h3,
+.modal h4,
+.modal h5,
+.modal h6 {
   margin: 0;
 }
 
+.modal .block-input {
+  width: 100%;
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  gap: 6px;
+}
 
+.modal .block-input label {
+  text-align: right;
+}
 
-.modal div{
+.modal i.closeModal{
+  background-color: gray;
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  border-radius: 5px;
+  color: white;
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+}
+
+/* MODALS: ESPECÍFICOS  ================ */
+
+.wallet-container{
   width: 100%;
   display: flex;
-  justify-content: center;
-  align-items: center;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.wallet{
+  display: flex;
+  padding: 5px 10px;
+  border: 1px solid rgba(0,0,0,0.2);
+  border-radius: 5px;
+  gap: 12px;
+}
+
+.wallet-add{
+  display: flex;
+  width: 100%;
   gap: 10px;
 }
 
-.modal input,
-.modal select{
-  width: 100%;
+.wallet-add input{
+  flex: 1;
 }
 
-@media screen and (min-width: 800px) {
-
+.wallet-add button{
+  margin: 0;
 }
+
+.wallet__buttons{
+  display: flex;
+  margin-left: auto;
+  gap: 5px;
+}
+
+.wallet__buttons i{
+  cursor: pointer;
+  font-display: flex;
+  background: gray;
+  width: 20px;
+  height: 20px;
+  border-radius: 6px;
+}
+
+.wallet input[type="text"]{
+  width: 75px;
+}
+
+@media screen and (min-width: 800px) {}

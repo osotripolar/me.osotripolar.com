@@ -51,8 +51,20 @@ router.post('/logout', (req, res) => {
 
 // RUTAS  PROTEGIDAS ============================
 
-router.get('/book', isAuthPage, (req, res) => {
-  res.render('book', { admin: req.user.admin })
+router.get('/notes', isAuthPage, (req, res) => {
+  res.render('notes', { admin: req.user.admin })
+})
+
+router.get('/dates', isAuthPage, (req, res) => {
+  res.render('dates', { admin: req.user.admin })
+})
+
+router.get('/expenses', isAuthPage, (req, res) => {
+  res.render('expenses', { admin: req.user.admin })
+})
+
+router.get('/gallery', isAuthPage, (req, res) => {
+  res.render('gallery', { admin: req.user.admin })
 })
 
 export default router

@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Expenses</title>
+  <!-- CSS -->
+  <link rel="stylesheet" href="/css/styles.css">
+  <link rel="stylesheet" href="/css/expenses.css">
+  <!-- BS : ICONS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+</head>
+
+<body>
+
+  <%- include('partials/header') %>
+
+  <main>
+  <div class="container">
+
+    <h1>Expenses</h1>
+    
+    <div class="movements-info">
+      <h4>Datos del Bloque Actual</h4>
+      <div class="title">
+        <p>Id: </p>
+      </div>
+      <p class="description"></p>
+      <ul class="lists">
+      </ul>
+      <button id="btnAddCashSession">Add New Block</button>
+      <p class="totalInit"></p>
+    </div>
+
+    <div class="movements-container hidden">
+      
+      <table>
+        <thead>
+          <tr>
+            <th>Monto</th>
+            <th>Descripción</th>
+            <th>From</th>
+            <th>to</th>
+            <th>Categoria</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>26</td>
+            <td>Menú x2</td>
+            <td>Yape</td>
+            <td>--</td>
+            <td>Comida</td>
+          </tr>
+  
+          <tr>
+            <td>2222222226</td>
+            <td>Menú x222222222</td>
+            <td>Yape222222222</td>
+            <td>--222-22222</td>
+            <td>Comida22222222</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <button id="btnOpenModalMovement">Añadir operación</button>
+    </div>
+    
+  </div>
+  </main>
+
+  <%- include('partials/footer') %>
+
+  <script type="module" src="/js/expenses.js"></script>
+
+  <!-- TEMPLATES -->
+
+  <template id="fgModalAddBlock">
+    <div class="modal">
+      <h2>Nuevo Bloque</h2>
+      <div class="block-input">
+        <label for="inputBlock">Descripción :</label>
+        <input type="text" id="inputBlock">
+      </div>
+      <h3>Selecciona las wallets</h3>
+      <div class="wallet-container">
+        <div class="wallet">
+          <input type="checkbox">
+          <p>Nombre</p>
+          <i class="bi bi-x"></i>
+        </div>
+      </div>
+      <div class="wallet-add">
+        <label for="inputWallet">Nueva Wallet :</label>
+        <input id="inputWallet" type="text">
+        <button id="btnAddWallet">Add wallet</button>
+      </div>
+      <div class="">
+        <button id="btnAddBlock">Nuevo Bloque</button>
+        <button data-action="closeModal">Close</button>
+      </div>
+    </div>
+  </template>
+
+  <template id="fgModalAddMovement">
+    <div class="modal">
+
+      <h4>Agregar Movimiento</h4>
+
+      <div class="block-input">
+        <label for="">Monto : S/</label>
+        <input type="number" step="0.01"  id="inputMovAmount">
+
+        <label for="">Descripción :</label>
+        <input type="text" id="inputMovDescription">
+
+        <label for="">Desde :</label>
+        <select name="" id="inputMovFrom">
+          <option value="">Selecciona uno</option>
+        </select>
+        
+        <label for="">Hacia :</label>
+        <select name="" id="inputMovTo">
+          <option value="">Selecciona uno</option>
+        </select>
+        
+        <label for="">Categoría :</label>
+        <select name="" id="inputMovCategory">
+          <option value="">Selecciona uno</option>
+        </select>
+      </div>
+
+      <button id="btnAddMovement">Agregar</button>
+    </div>
+  </template>
+
+</body>
+
+</html>

@@ -1,5 +1,5 @@
-import { el } from "./utils/createElements.js"
-import { inputModal, inputModalBi, modalConfirm } from "./components/modal.js"
+import { el } from "./utils/htmElements.js"
+import { inputModal, inputSelectModal, modalConfirm } from "./components/modal.js"
 
 const openGroup = document.getElementById('openGroup')
 const closeGroup = document.getElementById('closeGroup')
@@ -18,16 +18,17 @@ const btnAddNote = document.querySelector('.notes .form button')
 let dataNotes
 let dataNoteGroup
 
-
 // LISTENERS ===============================================
 
 notesTitle.addEventListener('click', async (e) => {
   if (e.target.tagName != 'I') return
 
+  if(!e.target.classList.contains('bi-pencil-fill')) return
+
   const id = getIdNotesContainer()
   const data = dataNoteGroup.find(e => e.id == id)
 
-  const newName = await inputModal(data.name, id)
+  const newName = await inputModal({ text: data.name , title: "Editar Grupo", label: "Nombre"})
 
   // validación previa
   if(!newName) return
@@ -58,9 +59,14 @@ notesContainer.addEventListener('click', async (e) => {
     const idContainer = getIdNotesContainer()
     const contenidoOriginal = dataNotes.find(note => note.id == idNote)
 
-    const response = await inputModalBi(contenidoOriginal, dataNoteGroup, {
+    const response = await inputSelectModal({
+      arrayOptions : dataNoteGroup,
+      originalContent : contenidoOriginal,
       defaultOption: "Notas Sueltas",
-      idOption: idContainer
+      title: 'Editar Nota',
+      idOptionActive: idContainer,
+      labelInput : 'Contenido',
+      labelSelect : 'Grupo'
     })
 
     if (!response) return
@@ -289,7 +295,7 @@ function paintNotes(idGroup) {
   inputAddNote.value = ''
 }
 
-// idk functions ===========================================
+// SUPPORT FUNCTIONS =======================================
 
 function getIdNotesContainer() {
   const id = notesContainer.dataset.id
