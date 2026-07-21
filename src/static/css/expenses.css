@@ -1,10 +1,20 @@
+main p,
+main h3,
+main h4,
+main h5,
+main h6,
+main ul
+{
+  margin: 0;
+}
+
 main .container{
   display: flex;
   flex-direction: column;
   align-items: center;
+  gap: 5px;
 }
-
-
+/* MOVEMENTS INFO */
 
 .movements-info{
   display: flex;
@@ -16,24 +26,54 @@ main .container{
   background-color: #eee;
 }
 
-.movements-info p{
-  margin: 0;
+.movements-info__content{
+  width: 100%;
+  max-width: 500px;
 }
 
-.movements-info h4{
-  margin: 0;
+.movements-info__main{
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  width: 100%;
+  gap: 10px;
+  text-align: left;
+  margin: 10px 0;
 }
 
-.movements-info .title{
+.movements-info__wallets{
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-column: span 2;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.movements-info .block{
   display: flex;
-  gap: 8px;
+  border: 1px solid black;
+  background-color: white;
+  border-radius: 8px;
+  overflow: hidden;
 }
 
-.movements-info .lists{
-  display: flex;
-  gap: 8px;
-  margin: 0;
+.movements-info .block > p{
+  padding: 4px;
 }
+
+.movements-info .block > :first-child{
+  padding: 4px;
+  background-color: black;
+  color: white;
+  width: 50%;
+  display: flex;
+  justify-content: space-between;
+}
+
+.movements-info .block > :last-child{
+  width: 50%;
+  text-align: right;
+}
+
 
 /* TABLE ==================== */ 
 table {
@@ -58,14 +98,4 @@ th {
 
 tbody tr:hover {
   background-color: #f9fafb;
-}
-
-/* .movements-container p {
-  border: 1px solid gray;
-  margin: 0;
-} */
-
-/*  */
-.hidden {
-  display: none;
 }

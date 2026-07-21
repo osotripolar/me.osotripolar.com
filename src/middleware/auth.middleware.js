@@ -22,3 +22,26 @@ export const isAuthApi = (req,res,next) =>{
   }
 
 }
+
+export const readCredentials = (req, res, next) => {
+  try {
+
+    const { token } = req.cookies
+    req.user = jwt.verify(token, JWT_SECRET)
+    next()
+
+  } catch (error) {
+
+    if (error.message == 'jwt must be provided') {
+      // console.log('no tiene token') 
+    }
+
+    if (error.message == 'jwt expired') {
+      res
+        .clearCookie('token')
+    }
+
+    req.user = { admin: false }
+    next()
+  }
+}

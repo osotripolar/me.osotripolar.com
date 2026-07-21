@@ -138,11 +138,6 @@ main {
   height: 22px;
 }
 
-.notes .title i.hidden {
-  display: none;
-}
-
-
 .notes .title h2 {
   margin: 0;
 }

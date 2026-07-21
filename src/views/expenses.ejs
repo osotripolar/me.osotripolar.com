@@ -22,15 +22,44 @@
     <h1>Expenses</h1>
     
     <div class="movements-info">
-      <h4>Datos del Bloque Actual</h4>
-      <div class="title">
-        <p>Id: </p>
+
+      <div class="movements-info__content dissapear">
+
+        <p class="movements-info__description">Descripción: </p>
+
+        <div class="movements-info__main">
+
+          <h4>Inicio</h4>
+          <h4>Fin</h4>
+
+          <!-- aca va la info de la db -->
+          <div class="movements-info__wallets"> 
+          </div>
+
+          <div class="block block--start" data-info="start">
+            <div>
+              <p>Total:</p>
+              <p>S/</p>
+            </div>
+            <p class="money">123.00</p>
+          </div>
+
+          <div class="block block--end" data-info="end">
+            <div>
+              <p>Total:</p>
+              <p>S/</p>
+            </div>
+            <p>123.00</p>
+          </div>
+
+
+        </div>
+
       </div>
-      <p class="description"></p>
-      <ul class="lists">
-      </ul>
+
+      <p class="message">Aún no hay nada para mostrar</p>
       <button id="btnAddCashSession">Add New Block</button>
-      <p class="totalInit"></p>
+
     </div>
 
     <div class="movements-container hidden">
@@ -46,21 +75,6 @@
           </tr>
         </thead>
         <tbody>
-          <tr>
-            <td>26</td>
-            <td>Menú x2</td>
-            <td>Yape</td>
-            <td>--</td>
-            <td>Comida</td>
-          </tr>
-  
-          <tr>
-            <td>2222222226</td>
-            <td>Menú x222222222</td>
-            <td>Yape222222222</td>
-            <td>--222-22222</td>
-            <td>Comida22222222</td>
-          </tr>
         </tbody>
       </table>
 

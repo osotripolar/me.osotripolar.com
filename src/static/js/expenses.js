@@ -96,7 +96,7 @@ async function postMovements(object) {
 
   if (!result.ok) {
     return
-  }else{
+  } else {
     const data = await result.json()
     return data
   }
@@ -184,24 +184,20 @@ function findIdMayor(array) {
 
 function renderAll() {
 
-  const p = movInfoContainer.querySelector('p')
-  const description = movInfoContainer.querySelector('.description')
-  const ul = movInfoContainer.querySelector('.lists')
-  const totalInit = movInfoContainer.querySelector('.totalInit')
+  const p = movInfoContainer.querySelector('.message')
+  const description = movInfoContainer.querySelector('.movements-info__description')
+  const movContent = movInfoContainer.querySelector('.movements-info__content')
+  const movWallets = movInfoContainer.querySelector('.movements-info__wallets')
+  const blockStart = movInfoContainer.querySelector('.block--start .money')
 
   // normalización
-  description.textContent = "Description: "
-  description.classList.add('hidden')
-  ul.classList.add('hidden')
-  movContainer.classList.add('hidden')
-  p.classList.remove('hidden')
-  totalInit.classList.add('hidden')
-  
-  if (dataCashSessions.length == 0) {
-    p.textContent = 'No existen bloques, crea uno para empezar'
-  } else {
-    p.classList.add('hidden')
-    totalInit.classList.remove('hidden')
+  p.classList.remove('dissapear')
+  movContent.classList.add('dissapear')
+  description.classList.add('dissapear')
+
+  if (dataCashSessions.length != 0) {
+    movContent.classList.remove('dissapear')
+    p.classList.add('dissapear')
 
     // filtrado de datos
 
@@ -217,7 +213,7 @@ function renderAll() {
     movInfoContainer.dataset.id = dataFiltred.id
 
     if (dataFiltred.description) {
-      description.classList.remove('hidden')
+      description.classList.remove('dissapear')
       description.textContent += dataFiltred.description
     }
 
@@ -235,20 +231,43 @@ function renderAll() {
       const { mony_source_id, starting_balance } = wallet
       const walletName = dataWallets.find(e => e.id == mony_source_id).name
 
-      const li = el('li', undefined, `${walletName} : S/ ${starting_balance}`)
-      fragment.appendChild(li)
+      const blockStart = el('div', 'block')
+      blockStart.dataset.info = 'start'
+
+      blockStart.innerHTML = `
+      <div>
+        <p>${walletName}</p>
+        <p>S/</p>
+      </div>
+      <p>${starting_balance}</p>
+      `
+
+      const blockEnd = el('div', 'block')
+      blockEnd.dataset.info = 'end'
+
+      blockEnd.innerHTML = `
+      <div>
+        <p>${walletName}</p>
+        <p>S/</p>
+      </div>
+      <p>${starting_balance}</p>
+      `
+
+      fragment.appendChild(blockStart)
+      fragment.appendChild(blockEnd)
 
       totalMonyInit += Number(starting_balance)
 
     })
-    
-    totalInit.textContent = `S/ ${totalMonyInit}`
-    
-    ul.classList.remove('hidden')
-    ul.replaceChildren(fragment)
+
+    movWallets.replaceChildren(fragment)
+
+    blockStart.textContent = totalMonyInit
+
+    // ul.classList.remove('hidden')
+    // ul.replaceChildren(fragment)
 
     renderTable(dataFiltred.id)
-    movContainer.classList.remove('hidden')
 
   }
 }
@@ -257,20 +276,22 @@ function renderTable(idCash) {
 
   if (!idCash) return
 
+  movContainer.classList.remove('hidden')
 
-  const movements = dataMovements.filter(e=> e.cash_session_id == idCash)
+
+  const movements = dataMovements.filter(e => e.cash_session_id == idCash)
 
   const tbody = movContainer.querySelector('tbody')
   tbody.replaceChildren()
 
-  if(movements.length == 0){
+  if (movements.length == 0) {
     console.log('Aún no hay registros para esta tabla')
     return
   }
 
   const fragment = document.createDocumentFragment()
 
-  movements.forEach(e=>{
+  movements.forEach(e => {
     const tr = generateTr(e)
 
     fragment.appendChild(tr)
@@ -279,17 +300,24 @@ function renderTable(idCash) {
   tbody.appendChild(fragment)
 
 
-  function generateTr(data){
+  function generateTr(data) {
+
+    const nameFrom = dataWallets.find(e => e.id == data.from_mony_source_id)?.name ?? '-';
+    const nameTo = dataWallets.find(e => e.id == data.to_mony_source_id)?.name ?? '-';
+    const nameDescription = data.description ?? '-'
+    const nameCategorie = dataCategories.find(e => e.id == data.category_id)?.name ?? '-';
+
+    console.log(nameFrom, nameTo);
 
     const tr = el('tr')
     tr.dataset.id = data.id
 
     tr.innerHTML = `
     <td>S/ ${data.amount_cents}</td>
-    <td>${data.description}</td>
-    <td>${data.from_mony_source_id}</td>
-    <td>${data.to_mony_source_id}</td>
-    <td>${data.category_id}</td>
+    <td>${nameDescription}</td>
+    <td>${nameFrom}</td>
+    <td>${nameTo}</td>
+    <td>${nameCategorie}</td>
     `
     return tr
   }
@@ -359,14 +387,14 @@ function addMovement() {
       }
     });
 
-    if(objectPost.amount == null){
+    if (objectPost.amount == null) {
       console.log('amount no puede ser vacio')
       return
     }
 
     const result = await postMovements(objectPost)
-    
-    if(!result){
+
+    if (!result) {
       console.log('error al hacer post a movements')
       return
     }
@@ -374,7 +402,7 @@ function addMovement() {
     dataMovements.push(result)
     closeModalContainer()
     renderTable(idContext)
-    
+
     // recargamos las cosas
   })
 
